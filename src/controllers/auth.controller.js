@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { createUser, findUserByEmail } from '../models/user.model.js';
+import { createAdmin, createUser, findUserByEmail } from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
 
 export async function register(req, res) {
@@ -73,5 +73,39 @@ export async function login(req, res) {
 
     } catch (error) {
         res.status(500).json({ error: 'Error en el servidor' });
+    }
+}
+
+export async function registerAdmin(req, res) {
+    try {
+        const { username, email, password } = req.body;
+
+        // valido que este todo
+        if(!username || !email || !password) {
+            return res.status(400).json({ error: 'Todos los campos son obli...'});
+        }
+
+        // encripto la contraseña
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        //Creo el usuario
+        const newUser = await createAdmin({
+            username,
+            email,
+            password: hashedPassword
+        });
+
+        res.status(201).json({
+            message: 'Usuario creado exitosamente',
+            user:{
+                id: newUser.id,
+                username: newUser.username,
+                email: newUser.email,
+                role: newUser.role
+            }
+        });
+
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 }
