@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, registerAdmin } from '../controllers/auth.controller.js';
+import { register, login, registerAdmin, getProfile } from '../controllers/auth.controller.js';
 import { authenticateToken, isAdmin } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -28,5 +28,7 @@ router.get('/admin-panel', authenticateToken, isAdmin, (req, res) => {
         user: req.user
     });
 });
+
+router.get('/me', authenticateToken, getProfile);
 
 export default router;
